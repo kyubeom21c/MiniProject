@@ -32,6 +32,9 @@ public:
     }
 
     void FireAngle(double _ATSPox_y, double _ATSPos_y, double ATSspeed)
+    {
+
+    }
 };
 void fnAMSLib()
 {
