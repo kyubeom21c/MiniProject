@@ -1,15 +1,3 @@
 .vs/
 WpfApp/bin/
 WpfApp/obj/
-AMS_Lib/Debug/
-ATS_Lib/Debug/
-Debug/
-AMS_Lib/AMS_Lib.vcxproj.filters
-AMS_Lib/AMS_Lib.vcxproj.user
-ATS_Lib/ATS_Lib.vcxproj.filters
-ATS_Lib/ATS_Lib.vcxproj.user
-MiniProject_CLR/MiniProject_CLR.vcxproj.filters
-MiniProject_CLR/MiniProject_CLR.vcxproj.user
-MiniProject_Test/MiniProject_Test.vcxproj.user
-OPC_Lib/OPC_Lib.vcxproj.filters
-OPC_Lib/OPC_Lib.vcxproj.user
