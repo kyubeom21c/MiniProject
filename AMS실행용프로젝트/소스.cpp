@@ -35,6 +35,7 @@ private:
     //double ATSPos_x; //공중위협의 위치 중 x 좌표 , 대공유도탄이 발사명령을 받아 발사하기 직전의 좌표
     //double ATSPos_y; //공중위협의 위치 중 y 좌표 , 대공유도탄이 발사명령을 받아 발사하기 직전의 좌표
 
+    bool AMS_State = "False";
 public:
     double samplingRate;
     double timestep = 0.1;
@@ -55,10 +56,12 @@ public:
             message.erase(0, pos + delimiter.length());
         }
 
-        for (const auto& s : tok)
-            cout << s << endl;
-        //AMSPos_initial_x = x;
-        //AMSPos_initial_y = y;
+        //for (const auto& s : tok)
+          //  cout << s << endl;
+        AMSPos_initial_x = stod(tok[0]);
+        AMSPos_initial_y = stod(tok[1]);
+        AMS_State = "True";
+        cout << "대공 유도탄 초기 x : " << AMSPos_initial_x << "   대공유도탄 초기 y : " << AMSPos_initial_y << endl;
     }
 
     // 이동 및 좌표 갱신 함수, 현재 좌표를 받아서 timestep 만큼 후의 좌표를 반환한다.
@@ -76,18 +79,18 @@ public:
         cout << "next_y : " << next_pos_y << endl;
     }
 
-    void FireAngle(double _ATSPos_Initial_x, double _ATSPos_Initial_y, double _ATSPos_Target_x, double _ATSPos_Target_y, double _ATSPos_x, double _ATSPos_y, double ATSspeed)
-        // arg : 공중위협 초기위치(x), 공중위협 초기위치(y), 공중위협 목표위치(x), 공중위협 목표위치(y), 공중위협 현재위치(x), 공중위협 현재위치(y), 공중위협 속력
+    void FireAngle(double _ATSPos_x, double _ATSPos_y, double _ATSPos_Target_x, double _ATSPos_Target_y, double ATSspeed)
+        // arg : 공중위협 현재위치(x), 공중위협 현재위치(y), 공중위협 목표위치(x), 공중위협 목표위치(y),  공중위협 속력
     {
         // 시나리오로부터 공중위협의 초기위치와 목적위치로부터 공중위협의 비행 각도를 구한다.
         // ATSang = (y_target - y_init) / (x_target - x_init)
 
         // 
-        ATS_dX = (_ATSPos_Target_x - _ATSPos_Initial_x);
-        ATS_dY = (_ATSPos_Target_y - _ATSPos_Initial_y);
+        ATS_dX = (_ATSPos_Target_x - _ATSPos_x);
+        ATS_dY = (_ATSPos_Target_y - _ATSPos_y);
 
         ATS_ang = atan2(ATS_dY, ATS_dX); // 공중위협의 비행 각도
-        
+
         ATSvX = cos(ATS_ang) * ATSspeed;  //공중위협 x이동속도
         ATSvY = sin(ATS_ang) * ATSspeed;  //공중위협 y이동속도
 
@@ -141,7 +144,7 @@ void fnAMSLib()
 int main()
 {
 
-    AMSDynamics ams = AMSDynamics("0    0    10    10    2"); // 생성자 : 유도탄 발사 초기위치 
+    AMSDynamics ams = AMSDynamics("0    0"); // 생성자 : 유도탄 발사 초기위치 
     //ams.NextPos(10.1, 10.1, 3.14 / 6);
     //ams.FireAngle(-2000, -2000, 4000, 4000, -2000, -2000, 340);
     // arg : 공중위협 초기위치(x), 공중위협 초기위치(y), 공중위협 목표위치(x), 공중위협 목표위치(y), 공중위협 현재위치(x), 공중위협 현재위치(y), 공중위협 속력
