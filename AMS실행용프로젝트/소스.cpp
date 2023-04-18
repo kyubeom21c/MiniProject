@@ -9,34 +9,19 @@
 #include <thread>
 using namespace std;
 
-// AMSDynamics 생성자 : AMSDynamics(유도탄 초기위치x, 유도탄 초기위치y)
-
-
-void thread_function(double x, double y)
-{
-    // 파라미터로 받은 count 수치만큼 반복문을 실행한다.
-    while (1)
-    {
-        // 콘솔 출력
-        cout << "현재 위치 x : " << x << "현재 위치 y : " << y << endl;
-        // 쓰레드의 비활성 상태 대기, 10ms간..
-        this_thread::sleep_for(chrono::milliseconds(100));
-    }
-}
-
 class AMSDynamics
 {
 private:
     double curr_pos_x; //대공유도탄의 현재 위치 중 x좌표
     double curr_pos_y; //대공유도탄의 현재 위치 중 y좌표
 
-    double next_pos_x; //대공유도탄의 다음 위치 중 x좌표
-    double next_pos_y; //대공유도탄의 다음 위치 중 y좌표
+    double next_pos_x; //대공유도탄의 다음 위치 중 x좌표 ******************************************
+    double next_pos_y; //대공유도탄의 다음 위치 중 y좌표 ****************************************
 
     double ATS_dX;
     double ATS_dY;
 
-    double ATS_ang; // 공중위협의 비행 각도
+    double ATS_ang; // 공중위협의 비행 각도  ************************
 
     double ATSvX;  //공중위협 x이동속도
     double ATSvY;  //공중위협 y이동속도
@@ -51,16 +36,19 @@ private:
 
     bool AMS_State = "False";
 public:
+    //-------------------------------------------------------------------------------/
     double samplingRate;
     double timestep = 0.1;
-    double AMSPos_initial_x;
-    double AMSPos_initial_y;
-
+    //--------------------------------------------------------------------------------/
     AMSDynamics(string message); // AMS 생성자. 매개변수 : 유도탄 발사 초기위치 (x, y)
     double get_Current_X();
     double get_Current_Y();
-    void NextPos(double _pos_x, double _pos_y, double _angle); // 이동 및 좌표 갱신 함수, 현재 좌표를 받아서 timestep 만큼 후의 좌표를 반환한다.
+    void set_X(double x);
+    void set_Y(double y);
+    void NextPos(); // 이동 및 좌표 갱신 함수, 현재 좌표를 받아서 timestep 만큼 후의 좌표를 반환한다.
     void FireAngle(string message); // arg : 공중위협 현재위치(x), 공중위협 현재위치(y), 공중위협 목표위치(x), 공중위협 목표위치(y),  공중위협 속력
+    void send_pos();
+
 };
 
 AMSDynamics::AMSDynamics(string message)
@@ -79,10 +67,10 @@ AMSDynamics::AMSDynamics(string message)
 
     //for (const auto& s : tok)
       //  cout << s << endl;
-    AMSPos_initial_x = stod(tok[0]);
-    AMSPos_initial_y = stod(tok[1]);
+    curr_pos_x = stod(tok[0]);
+    curr_pos_y = stod(tok[1]);
     AMS_State = "True";
-    cout << "대공 유도탄 초기 x : " << AMSPos_initial_x << "   대공유도탄 초기 y : " << AMSPos_initial_y << endl;
+    cout << "대공 유도탄 초기 x : " << curr_pos_x << "   대공유도탄 초기 y : " << curr_pos_y << endl;
 }
 
 double AMSDynamics::get_Current_X()
@@ -93,20 +81,28 @@ double AMSDynamics::get_Current_Y()
 {
     return curr_pos_y;
 }
-
-void AMSDynamics::NextPos(double _pos_x, double _pos_y, double _angle)
+void AMSDynamics::set_X(double x)
 {
-    curr_pos_x = _pos_x;
-    curr_pos_y = _pos_y;
-    AMSangle = _angle;
+    curr_pos_x = x;
+}
+void AMSDynamics::set_Y(double y)
+{
+    curr_pos_y = y;
+}
+void AMSDynamics::NextPos()
+{
+    //AMSangle = _angle;
 
-    curr_pos_x = curr_pos_x + (AMSspeed * cos(AMSangle) * timestep);
-    curr_pos_y = curr_pos_y + (AMSspeed * sin(AMSangle) * timestep);
+    //curr_pos_x = curr_pos_x + (AMSspeed * cos(AMSangle) * timestep);
+    //curr_pos_y = curr_pos_y + (AMSspeed * sin(AMSangle) * timestep);
+    curr_pos_x = curr_pos_x + (AMSvX * timestep);
+    curr_pos_y = curr_pos_y + (AMSvY * timestep);
     //cout << "curr_x : " << curr_pos_x << endl;
     //cout << "curr_y : " << curr_pos_y << endl;
-    cout << "curr_pos_x : " << curr_pos_x << endl;
-    cout << "curr_pos_y : " << curr_pos_y << endl;
+    cout << "curr_pos_x : " << curr_pos_x << "    curr_pos_y : " << curr_pos_y << endl;
+
 }
+
 
 void AMSDynamics::FireAngle(string message)
 // arg : 공중위협 현재위치(x), 공중위협 현재위치(y), 공중위협 목표위치(x), 공중위협 목표위치(y),  공중위협 속력
@@ -115,7 +111,7 @@ void AMSDynamics::FireAngle(string message)
     // ATSang = (y_target - y_init) / (x_target - x_init)
     message.insert(message.length(), "    "); // 문자열 마지막에 공백 추가
     string delimiter = "    ";
-    vector<string> tok{}; // message을 tokenizing한 token을 저장할 vector	
+    vector<string> tok{}; // message을 tokenizing한 token을 저장할 vector   
     size_t pos = 0;
     // pos가 string::npos를 가리킬 때, 즉, 문자열의 끝에 도달할 때 까지 탐색
     while ((pos = message.find(delimiter)) != string::npos) {
@@ -137,7 +133,7 @@ void AMSDynamics::FireAngle(string message)
     ATSvX = cos(ATS_ang) * ATSspeed;  //공중위협 x이동속도
     ATSvY = sin(ATS_ang) * ATSspeed;  //공중위협 y이동속도
 
-    double a = (_ATSPos_y - AMSPos_initial_y) / (_ATSPos_y - AMSPos_initial_x);
+    double a = (_ATSPos_y - curr_pos_y) / (_ATSPos_y - curr_pos_x);
     double b = a * ATSvX + ATSvY;
 
     // 이차방정식 ax**2 + bx + c = 0의 계수
@@ -150,42 +146,91 @@ void AMSDynamics::FireAngle(string message)
 
     double collisionTime; // 충돌까지 소요시간
 
-    if ((_ATSPos_x - AMSPos_initial_x) / (sol1 - ATSvX) > 0)
+    if ((_ATSPos_x - curr_pos_x) / (sol1 - ATSvX) > 0)
     {
         AMSvX = sol1;
-        collisionTime = (_ATSPos_x - AMSPos_initial_x) / (sol1 - ATSvX);
+        collisionTime = (_ATSPos_x - curr_pos_x) / (sol1 - ATSvX);
     }
     else
     {
         AMSvX = sol2;
-        collisionTime = (_ATSPos_x - AMSPos_initial_x) / (sol2 - ATSvX);
+        collisionTime = (_ATSPos_x - curr_pos_x) / (sol2 - ATSvX);
     }
 
     AMSvY = a * (AMSvX - ATSvX) + ATSvY;
 
     cout << "대공위협 초기 위치 (x,y) : " << _ATSPos_x << " , " << _ATSPos_y << endl;
     cout << "대공위협 목표 위치 (x,y) : " << _ATSPos_Target_x << " , " << _ATSPos_Target_y << endl;
-    cout << "유도탄 초기 위치 (x,y) : " << AMSPos_initial_x << " , " << AMSPos_initial_y << endl;
+    cout << "유도탄 초기 위치 (x,y) : " << curr_pos_x << " , " << curr_pos_y << endl;
     cout << "유도탄 요격 속력 (Vx, Vy) : " << AMSvX << " , " << AMSvY << endl;
     cout << "Collision Time : " << collisionTime << " 초 후 요격" << endl;
     cout << "Collision Time 후 대공위협 위치 (x, y) : " << _ATSPos_x + ATSvX * collisionTime << " , " << _ATSPos_y + ATSvY * collisionTime << endl;
-    cout << "Collision Time 후 대공유도탄 위치 (x, y) : " << AMSPos_initial_x + AMSvX * collisionTime << " , " << AMSPos_initial_y + AMSvY * collisionTime << endl;
+    cout << "Collision Time 후 대공유도탄 위치 (x, y) : " << curr_pos_x + AMSvX * collisionTime << " , " << curr_pos_x + AMSvY * collisionTime << endl;
 
+}
+void AMSDynamics::send_pos()
+{
+    /*
+
+    */
+
+
+    while (1) {
+        this->FireAngle("-2000    -2000    4000    4000    340");
+        this->NextPos();
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
 }
 void fnAMSLib()
 {
 
 
 }
+/*
+void thread_function_pos(double x, double y)
+{
+    // 파라미터로 받은 count 수치만큼 반복문을 실행한다.
+    while (1)
+    {
+        // 콘솔 출력
+        cout << "현재 위치 x : " << x << "현재 위치 y : " << y << endl;
+        // 쓰레드의 비활성 상태 대기, 10ms간..
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+}
+*/
+void thread_function_state(string msg)
+{
+    // 파라미터로 받은 count 수치만큼 반복문을 실행한다.
+    if (msg == "okay")
+    {
+        while (1)
+        {
+            // 콘솔 출력
+            cout << "System is Connected!!" << endl;
+            // 쓰레드의 비활성 상태 대기, 100ms간..
+            this_thread::sleep_for(chrono::milliseconds(100));
+        }
+    }
+
+}
+
+
 
 int main()
 {
 
     AMSDynamics ams = AMSDynamics("0    0"); // 생성자 : 유도탄 발사 초기위치 
+    thread _t1(thread_function_state, "okay");
+    /*
     ams.FireAngle("-2000    -2000    4000    4000    340");
-    thread _t1(thread_function);
-    //ams.NextPos(10.1, 10.1, 3.14 / 6);
-    //ams.FireAngle("-2000, -2000,  4000, 4000,  340");
-    // arg :  공중위협 현재위치(x), 공중위협 현재위치(y) , 공중위협 목표위치(x), 공중위협 목표위치(y), , 공중위협 속력
+    for(int i =0 ; i<100; i++)
+        ams.NextPos();
+    */
+
+
+    thread t{ &AMSDynamics::send_pos , &ams };
     _t1.join();
+    t.join();
+
 }
