@@ -4,11 +4,20 @@
 #include <sstream>
 #include <thread>
 #include <vector>
-#include<mutex>
+#include<math.h>
 #include "UDPSocket.h"
 
 #define X_LIMIT 200.0
 #define Y_LIMIT 200.0
+#define DOWN_DISTANCE 5.0
+#define ATS_IP_ADDRESS "127.0.0.1"
+#define ATS_PORT 1000
+#define SMS_IP_ADDRESS "127.0.0.1"
+#define SMS_PORT 1000
+#define OPC_ATS_PORT 1001
+#define OPC_ATS_LIFE_PORT 1002
+#define OPC_SMS_PORT 1101
+#define OPC_SMS_LIFE_PORT 1102
 
 using namespace std;
 
@@ -39,7 +48,6 @@ private:
 	double target_y;
 	bool attack_type;
 	double attack_speed;
-
 	double now_x;
 	double now_y;
 };
@@ -53,6 +61,8 @@ public:
 	void move(double x, double y);
 	double getX();
 	double getY();
+	double getNowX();
+	double getNowY();
 	double getDistance();
 	double getSpeed();
 
@@ -68,26 +78,37 @@ private:
 class SimulateSet
 {
 public:
-	SimulateSet();
-	SimulateSet(UDPSocket ats_socket, UDPSocket sms_socket);
+	void initOperator();
+
 	void setAts_Scenirio(ATS_ScenarioData scenario);
 	void setSms_Scenirio(SMS_ScenarioData scenario);
 	ATS_ScenarioData getAts_Scenirio();
 	SMS_ScenarioData getSms_Scenirio();
 
-	void sendATSScenario();
-	void sendSMSScenario();
+	bool sendATSScenario();
+	bool sendSMSScenario();
 
-	void receiveATSPosition(UDPSocket socket);
-	void receiveSMSPosition(UDPSocket socket);
+	void receiveATSPosition(int process_num);
+	void receiveSMSPosition(int process_num);
+	void threadPos();
 
-	void runScenario();
-	void processATS(int process_no);
-	void lifeCheckATS(int process_no);
-	void processSMS(int process_no);
-	void lifeCheckSMS(int process_no);
+	void setATSScenario(double sx, double sy, double tx, double ty, bool att_type, double speed);
+	void lifeCheckATS(bool& checkpoint);
+	void setSMSScenario(double mx, double my);
+	void lifeCheckSMS(bool& checkpoint);
+	void threadLifeCheck();
 
+	void startSimulate();
 	void launch();
+	bool isEnermyDown();
+
+	int getATSStatus();
+	int getSMSStatus();
+
+	double getATSNowX();
+	double getATSNowY();
+	double getSMSNowX();
+	double getSMSNowY();
 
 private:
 	bool isReadyATS = false;
@@ -102,7 +123,7 @@ private:
 	sockaddr_in ats_life_address;
 	sockaddr_in sms_address;
 	sockaddr_in sms_life_address;
-	mutex g_lock;
-	bool isATSTimerStart = false;
-	bool isSMSTimerStart = false;
+	int atsStatus;	// 0: 대기, 1: 모의 배포, 2: 모의 실행 중, 3: 모의 종료
+	int smsStatus;
+	int process_number = 0;
 };
