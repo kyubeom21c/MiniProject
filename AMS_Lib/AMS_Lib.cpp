@@ -13,6 +13,7 @@ class AMSDynamics
 {
 public:
 double samplingRate;
+double timestep = 0.1;
 
     // 이동 및 좌표 갱신 함수
     void NextPos(double _pos_x, double _pos_y, double _angle)
@@ -22,7 +23,7 @@ double samplingRate;
         AMSangle = _angle;
 
         
-        double timestep = 0.1;
+        
                 
         next_pos_x = curr_pos_x + (AMSspeed * cos(AMSangle) * timestep);
         next_pos_y = curr_pos_y + (AMSspeed * sin(AMSangle) * timestep);
@@ -38,10 +39,13 @@ double samplingRate;
         // 
         double ATS_dX =  (_ATSPos_Target_x - _ATSPos_Initial_x);
         double ATS_dY= (_ATSPos_Target_y - _ATSPos_Initial_y);
+        
+        double ATS_ang = atan2(ATS_dY, ATS_dX);
 
-        double ATS_Rad = atan2(ATS_dY, ATS_dX);
-        cout << ATS_Rad;
-       
+        double ATSvX = cos(ATS_ang) * ATSspeed;  //공중위협 x이동속도
+        double ATSvY = sin(ATS_ang) * ATSspeed;  //공중위협 y이동속도
+
+
     }
 private:
     double curr_pos_x; //대공유도탄의 현재 위치 중 x좌표
@@ -53,10 +57,13 @@ private:
 
 
     double AMSangle; // 대공유도탄의 발사 각도
+    double AMSvX;//대공유도탄 X축 이동 값
+    double AMSvY;//대공유도탄 Y축 이동 값
     double AMSspeed = 340 * 5; // 대공유도탄 속력 (마하5 의 초당 속력 m)
 
     double ATSPos_x; //공중위협의 위치 중 x 좌표
     double ATSPos_y; //공중위협의 위치 중 y 좌표
+    double ATSspeed = 340; // 공중위협 속력 일단 마하 1
 
 };
 void fnAMSLib()
