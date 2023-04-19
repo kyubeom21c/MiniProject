@@ -28,7 +28,7 @@ int main(void)
     //
     cout << "Hello World";
 
-    WSASession session();
+    WSASession session;
     AMSDynamics ams;
     ams.initAMS();
     

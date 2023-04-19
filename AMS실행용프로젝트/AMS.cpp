@@ -48,6 +48,7 @@ void AMSDynamics::sendLife()
 
 void AMSDynamics::Set_AMS_System()
 {
+    AMS_scenario = "0,0";
     AMS_scenario.insert(AMS_scenario.length(), ","); // 문자열 마지막에 공백 추가
     string delimiter = ",";
     vector<string> tok{}; // message을 tokenizing한 token을 저장할 vector	
@@ -62,6 +63,7 @@ void AMSDynamics::Set_AMS_System()
 
     //for (const auto& s : tok)
       //  cout << s << endl;
+
     curr_pos_x = stod(tok[0]);
     curr_pos_y = stod(tok[1]);
     AMS_State = "True";
@@ -96,6 +98,7 @@ void AMSDynamics::FireAngle()
 // arg : 공중위협 현재위치(x), 공중위협 현재위치(y), 공중위협 목표위치(x), 공중위협 목표위치(y),  공중위협 속력
 {
     // 시나리오로부터 공중위협의 초기위치와 목적위치로부터 공중위협의 비행 각도를 구한다.
+    ATS_POS = "-2000,-2000,4000,4000,340";
     ATS_POS.insert(ATS_POS.length(), ","); // 문자열 마지막에 공백 추가
     string delimiter = ",";
     vector<string> tok{}; // message을 tokenizing한 token을 저장할 vector   
