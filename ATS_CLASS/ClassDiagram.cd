@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ATS_COM">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAIAAACAAABgAAgAhEBAYAAAAAAAAABBAAAAAAA=</HashCode>
+      <FileName>ATS_COM.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATS_SIM">
+    <Position X="3" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAEAAgJAFgEgAAACAAIAABAAAAAAAAUAAAAAAAI=</HashCode>
+      <FileName>ATS_SIM.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="atsCom" />
+      <Field Name="curPos" />
+      <Field Name="endPos" />
+      <Field Name="startPos" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="UDPSocket" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAkAAAQAAAAAAIAAAAAAAAAAAAgAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UDPSocket.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="PosVal">
+    <Position X="5.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAAAAAAA=</HashCode>
+      <FileName>ATS_SIM.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Font Name="맑은 고딕" Size="9" />
+</ClassDiagram>
