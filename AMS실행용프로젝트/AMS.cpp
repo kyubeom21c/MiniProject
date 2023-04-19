@@ -29,9 +29,9 @@ void AMSDynamics::receiveScenario()
         }
     }
     if (count > 2)
-        ATS_POS = receivedMsg;
+        ATS_POS = receivedMsg; //공중위협 좌표
     else
-        AMS_scenario = receivedMsg;
+        AMS_scenario = receivedMsg; //대공유도탄 위치
 }
 
 void AMSDynamics::sendXY()
@@ -98,7 +98,7 @@ void AMSDynamics::FireAngle()
 // arg : 공중위협 현재위치(x), 공중위협 현재위치(y), 공중위협 목표위치(x), 공중위협 목표위치(y),  공중위협 속력
 {
     // 시나리오로부터 공중위협의 초기위치와 목적위치로부터 공중위협의 비행 각도를 구한다.
-    ATS_POS = "-2000,-2000,4000,4000,340";
+    //ATS_POS = "-2000,-2000,4000,4000,340";
     ATS_POS.insert(ATS_POS.length(), ","); // 문자열 마지막에 공백 추가
     string delimiter = ",";
     vector<string> tok{}; // message을 tokenizing한 token을 저장할 vector   

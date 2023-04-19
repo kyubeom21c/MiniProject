@@ -14,7 +14,6 @@ void thread_function_state(string msg)
             this_thread::sleep_for(chrono::milliseconds(100));
         }
     }
-
 }
 
 int main(void)
@@ -31,13 +30,18 @@ int main(void)
     WSASession session;
     AMSDynamics ams;
     ams.initAMS();
-    
-    ams.Set_AMS_System();
+
+    // 초기 시나리오 수신
+    ams.receiveScenario();
+
     thread _t1(thread_function_state, "okay");
     //발사명령
+    ams.receiveScenario();
     ams.FireAngle();
     thread t{ &AMSDynamics::send_pos , &ams };
+
+    ams.receiveScenario();
+
     _t1.join();
     t.join();
-
 }
